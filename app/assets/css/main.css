@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "moneyman";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  /* Base colors — clean white with warm undertones */
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97.5% 0.003 90);
+  --color-base-300: oklch(95% 0.005 80);
+  --color-base-content: oklch(17% 0.005 50);
+
+  /* Primary — dark forest green */
+  --color-primary: oklch(30.6% 0.084 153);
+  --color-primary-content: oklch(100% 0 0);
+
+  /* Secondary — golden yellow */
+  --color-secondary: oklch(66.6% 0.162 80);
+  --color-secondary-content: oklch(100% 0 0);
+
+  /* Accent — deep green */
+  --color-accent: oklch(36% 0.1 153);
+  --color-accent-content: oklch(100% 0 0);
+
+  /* Neutral — near black warm */
+  --color-neutral: oklch(17% 0.005 50);
+  --color-neutral-content: oklch(98.5% 0.002 90);
+
+  /* State colors */
+  --color-info: oklch(56% 0.155 230);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(58% 0.16 150);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(80% 0.18 85);
+  --color-warning-content: oklch(17% 0.005 50);
+  --color-error: oklch(57% 0.22 27);
+  --color-error-content: oklch(100% 0 0);
+
+  /* Corporate: small radius, no animations */
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/* Modal backdrop: blur instead of solid black */
+.modal-backdrop {
+  background-color: oklch(0% 0 0 / 35%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
