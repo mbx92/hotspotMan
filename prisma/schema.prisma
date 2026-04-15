@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum HotspotMode {
+  CLICK_THROUGH
+  LOCAL_CREDENTIALS
+  RADIUS
+}
+
+enum DhcpProvider {
+  DNSMASQ
+  KEA
+}
+
+model Session {
+  id              String       @id @default(uuid()) @db.Uuid
+  mac             String       @db.VarChar(17)
+  ip              String       @db.VarChar(45)
+  hotspotUsername String?      @db.VarChar(64)
+  hotspotUserId   String?      @db.Uuid
+  authMode        HotspotMode  @default(CLICK_THROUGH)
+  loginAt         DateTime     @default(now())
+  logoutAt        DateTime?
+  hotspotUser     HotspotUser? @relation(fields: [hotspotUserId], references: [id], onDelete: SetNull)
+
+  @@index([loginAt])
+  @@index([logoutAt])
+  @@index([mac])
+  @@index([hotspotUserId])
+  @@index([hotspotUsername])
+}
+
+model Admin {
+  id           String   @id @default(uuid()) @db.Uuid
+  username     String   @unique @db.VarChar(64)
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Banner {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String   @db.VarChar(160)
+  imageUrl  String
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isActive, createdAt])
+}
+
+model HotspotSettings {
+  id                    String      @id @default(uuid()) @db.Uuid
+  settingsKey           String      @unique @default("default") @db.VarChar(32)
+  mode                  HotspotMode @default(CLICK_THROUGH)
+  gatewayName           String      @default("Hospital Wi-Fi") @db.VarChar(120)
+  landingPageUrl        String?     @db.VarChar(255)
+  sessionTimeoutMinutes Int         @default(480)
+  radiusClientIp        String?     @db.VarChar(64)
+  radiusNasIdentifier   String?     @db.VarChar(120)
+  radiusServer          String?     @db.VarChar(255)
+  radiusAuthPort        Int         @default(1812)
+  radiusAcctPort        Int         @default(1813)
+  radiusSecret          String?
+  updatedAt             DateTime    @updatedAt
+}
+
+model HotspotUser {
+  id           String    @id @default(uuid()) @db.Uuid
+  username     String    @unique @db.VarChar(64)
+  passwordHash String
+  fullName     String?   @db.VarChar(120)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+}
+
+model DhcpSettings {
+  id                String            @id @default(uuid()) @db.Uuid
+  settingsKey       String            @unique @default("default") @db.VarChar(32)
+  provider          DhcpProvider      @default(DNSMASQ)
+  enabled           Boolean           @default(true)
+  interfaceName     String            @default("br-lan") @db.VarChar(64)
+  listenAddress     String?           @db.VarChar(64)
+  subnet            String            @default("192.168.30.0/24") @db.VarChar(64)
+  rangeStart        String            @default("192.168.30.50") @db.VarChar(64)
+  rangeEnd          String            @default("192.168.30.200") @db.VarChar(64)
+  routerIp          String            @default("192.168.30.1") @db.VarChar(64)
+  dnsServers        String            @default("1.1.1.1,8.8.8.8") @db.VarChar(255)
+  domainName        String?           @db.VarChar(120)
+  leaseTime         String            @default("12h") @db.VarChar(32)
+  dnsmasqConfigPath String?           @db.VarChar(255)
+  keaConfigPath     String?           @db.VarChar(255)
+  updatedAt         DateTime          @updatedAt
+  reservations      DhcpReservation[]
+}
+
+model DhcpReservation {
+  id             String       @id @default(uuid()) @db.Uuid
+  dhcpSettingsId String       @db.Uuid
+  mac            String       @db.VarChar(17)
+  ip             String       @db.VarChar(64)
+  hostname       String?      @db.VarChar(120)
+  description    String?      @db.VarChar(255)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  dhcpSettings   DhcpSettings @relation(fields: [dhcpSettingsId], references: [id], onDelete: Cascade)
+
+  @@index([dhcpSettingsId])
+  @@unique([dhcpSettingsId, mac])
+  @@unique([dhcpSettingsId, ip])
+}

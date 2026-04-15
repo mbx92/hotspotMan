@@ -7,17 +7,30 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "prisma generate && nuxt prepare",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "db:seed": "tsx prisma/seed.ts",
+    "dhcp-agent": "tsx ops/dhcp-agent.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
     "@tailwindcss/vite": "^4.2.1",
+    "bcryptjs": "^3.0.3",
     "nuxt": "^3.21.1",
+    "pg": "^8.20.0",
+    "prisma": "^7.7.0",
     "tailwindcss": "^4.2.1",
     "vue": "^3.5.29",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@types/node": "^25.3.5",
-    "daisyui": "^5.5.19"
+    "daisyui": "^5.5.19",
+    "tsx": "^4.21.0"
   }
 }
